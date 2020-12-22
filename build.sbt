@@ -2,22 +2,17 @@ import sbt._
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
+githubSuppressPublicationWarning in Global := true
+githubOwner in Global := "ITV"
+githubRepository in Global := "fs2-quartz"
+githubTokenSource in Global := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
+
 val commonSettings: Seq[Setting[_]] = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.2" cross CrossVersion.full),
   organization := "com.itv",
   scalaVersion := "2.13.4",
   crossScalaVersions := Seq("2.12.12", scalaVersion.value),
   bloopAggregateSourceDependencies in Global := true,
-  credentials ++=
-    Seq(".itv-credentials", ".user-credentials", ".credentials")
-      .map(fileName => Credentials(Path.userHome / ".ivy2" / fileName)),
-  publishTo in ThisBuild := {
-    val artifactory = "https://itvrepos.jfrog.io/itvrepos/oasvc-ivy"
-    if (isSnapshot.value)
-      Some("Artifactory Realm" at artifactory)
-    else
-      Some("Artifactory Realm" at artifactory + ";build.timestamp=" + new java.util.Date().getTime)
-  },
 )
 
 def createProject(projectName: String): Project =

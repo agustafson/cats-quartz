@@ -10,6 +10,7 @@ jobs:
           java-version: '11'
       - uses: "olafurpg/setup-gpg@v3"
       - env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
           PGP_SECRET: "${{ secrets.PGP_SECRET }}"
           SONATYPE_PASSWORD: "${{ secrets.SONATYPE_PASSWORD }}"
