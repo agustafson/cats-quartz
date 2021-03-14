@@ -14,6 +14,10 @@ githubOwner in Global := "ITV"
 githubRepository in Global := "cats-quartz"
 githubTokenSource in Global := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
 
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
+ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
+
 val commonSettings: Seq[Setting[_]] = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.2" cross CrossVersion.full),
   organization := "com.itv",
