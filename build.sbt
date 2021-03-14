@@ -11,7 +11,7 @@ bloopExportJarClassifiers in Global := Some(Set("sources"))
 
 githubSuppressPublicationWarning in Global := true
 githubOwner in Global := "ITV"
-githubRepository in Global := "fs2-quartz"
+githubRepository in Global := "cats-quartz"
 githubTokenSource in Global := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
 
 val commonSettings: Seq[Setting[_]] = Seq(
