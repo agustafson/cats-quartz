@@ -9,10 +9,10 @@ releaseCrossBuild := true
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
-githubSuppressPublicationWarning in Global := true
-githubOwner in Global := "ITV"
-githubRepository in Global := "cats-quartz"
-githubTokenSource in Global := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
+ThisBuild / githubSuppressPublicationWarning := true
+ThisBuild / githubOwner := "ITV"
+ThisBuild / githubRepository := "cats-quartz"
+ThisBuild / githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
@@ -50,7 +50,7 @@ lazy val core = createProject("core")
       "org.typelevel"       %% "cats-effect"                     % Versions.catsEffect,
       "co.fs2"              %% "fs2-core"                        % Versions.fs2,
       "org.scalatest"       %% "scalatest"                       % Versions.scalatest           % Test,
-      "org.scalatestplus"   %% "scalacheck-1-14"                 % Versions.scalatestScalacheck % Test,
+      "org.scalatestplus"   %% "scalacheck-1-15"                 % Versions.scalatestScalacheck % Test,
       "com.dimafeng"        %% "testcontainers-scala-scalatest"  % Versions.testContainers      % Test,
       "com.dimafeng"        %% "testcontainers-scala-postgresql" % Versions.testContainers      % Test,
       "org.postgresql"       % "postgresql"                      % Versions.postgresql          % Test,
@@ -67,7 +67,7 @@ lazy val extruder = createProject("extruder")
     libraryDependencies ++= Seq(
       "io.extruder"       %% "extruder-core"   % Versions.extruder,
       "org.scalatest"     %% "scalatest"       % Versions.scalatest           % Test,
-      "org.scalatestplus" %% "scalacheck-1-14" % Versions.scalatestScalacheck % Test,
+      "org.scalatestplus" %% "scalacheck-1-15" % Versions.scalatestScalacheck % Test,
       "org.scalamock"     %% "scalamock"       % Versions.scalamock           % Test,
       "ch.qos.logback"     % "logback-classic" % Versions.logback             % Test,
     ),
