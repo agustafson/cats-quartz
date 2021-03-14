@@ -42,7 +42,7 @@ class AckingQueueJobFactory[F[_]: ConcurrentEffect, M[*[_], _], A: JobDecoder](
     )
 }
 
-object Fs2StreamJobFactory {
+object CatsStreamJobFactory {
   def autoAcking[F[_]: ConcurrentEffect, A: JobDecoder](messages: Queue[F, A]): AutoAckingQueueJobFactory[F, A] =
     new AutoAckingQueueJobFactory[F, A](messages)
 

@@ -1,11 +1,11 @@
-# fs2-quartz
-Quarts scheduler library using fs2
+# cats-quartz
+Quarts scheduler library using cats-effect
 
 ### Import
 ```scala
 libraryDependencies ++= Seq(
-  "com.itv" %% "fs2-quartz-core"     % "0.7.0",
-  "com.itv" %% "fs2-quartz-extruder" % "0.7.0"
+  "com.itv" %% "cats-quartz-core"     % "0.7.0",
+  "com.itv" %% "cats-quartz-extruder" % "0.7.0"
 )
 ```
 
@@ -63,7 +63,7 @@ implicit val contextShift: ContextShift[IO] = IO.contextShift(ExecutionContext.g
 
 val jobMessageQueue = Queue.unbounded[IO, ParentJob].unsafeRunSync()
 // jobMessageQueue: Queue[IO, ParentJob] = fs2.concurrent.Queue$InPartiallyApplied$$anon$3@61313295
-val autoAckJobFactory = Fs2StreamJobFactory.autoAcking[IO, ParentJob](jobMessageQueue)
+val autoAckJobFactory = CatsStreamJobFactory.autoAcking[IO, ParentJob](jobMessageQueue)
 // autoAckJobFactory: AutoAckingQueueJobFactory[IO, ParentJob] = com.itv.scheduler.AutoAckingQueueJobFactory@1663393b
 ```
 
@@ -82,14 +82,14 @@ In both cases, the quartz job is only marked as complete once the `acker.complet
 val ackableJobResourceMessageQueue = Queue.unbounded[IO, Resource[IO, ParentJob]].unsafeRunSync()
 // ackableJobResourceMessageQueue: Queue[IO, Resource[IO, ParentJob]] = fs2.concurrent.Queue$InPartiallyApplied$$anon$3@b21463
 val ackingResourceJobFactory: AckingQueueJobFactory[IO, Resource, ParentJob] =
-  Fs2StreamJobFactory.ackingResource(ackableJobResourceMessageQueue)
+  CatsStreamJobFactory.ackingResource(ackableJobResourceMessageQueue)
 // ackingResourceJobFactory: AckingQueueJobFactory[IO, Resource, ParentJob] = com.itv.scheduler.AckingQueueJobFactory@279c4c65
 
 // each message is wrapped as a `AckableMessage` which acks on completion
 val ackableJobMessageQueue = Queue.unbounded[IO, AckableMessage[IO, ParentJob]].unsafeRunSync()
 // ackableJobMessageQueue: Queue[IO, AckableMessage[IO, ParentJob]] = fs2.concurrent.Queue$InPartiallyApplied$$anon$3@4f516799
 val ackingJobFactory: AckingQueueJobFactory[IO, AckableMessage, ParentJob] =
-  Fs2StreamJobFactory.acking(ackableJobMessageQueue)
+  CatsStreamJobFactory.acking(ackableJobMessageQueue)
 // ackingJobFactory: AckingQueueJobFactory[IO, AckableMessage, ParentJob] = com.itv.scheduler.AckingQueueJobFactory@40f435a9
 ```
 

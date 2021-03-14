@@ -82,7 +82,7 @@ class QuartzTaskScheduler[F[_], J](
 object QuartzTaskScheduler {
   def apply[F[_]: ContextShift, J: JobDataEncoder](
       blocker: Blocker,
-      quartzConfig: Fs2QuartzConfig,
+      quartzConfig: CatsQuartzConfig,
       callbackJobFactory: CallbackJobFactory,
   )(implicit F: ConcurrentEffect[F]): Resource[F, QuartzTaskScheduler[F, J]] =
     apply(blocker, quartzConfig.toQuartzProperties, callbackJobFactory)
