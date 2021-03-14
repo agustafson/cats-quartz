@@ -54,7 +54,7 @@ class QuartzTaskSchedulerTest extends AnyFlatSpec with Matchers with ForAllTestC
       messageQueue: Queue[IO, ParentTestJob]
   ): Resource[IO, QuartzTaskScheduler[IO, ParentTestJob]] = {
     val blocker    = Blocker.liftExecutorService(Executors.newFixedThreadPool(8))
-    val jobFactory = Fs2StreamJobFactory.autoAcking[IO, ParentTestJob](messageQueue)
+    val jobFactory = CatsStreamJobFactory.autoAcking[IO, ParentTestJob](messageQueue)
     QuartzTaskScheduler[IO, ParentTestJob](blocker, quartzProperties, jobFactory)
   }
 

@@ -1,5 +1,12 @@
 import sbt._
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
+scalaVersion in ThisBuild := "2.13.4"
+
+crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.12.12")
+releaseCrossBuild := true
+
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
 githubSuppressPublicationWarning in Global := true
@@ -10,15 +17,13 @@ githubTokenSource in Global := TokenSource.Environment("GITHUB_TOKEN") || TokenS
 val commonSettings: Seq[Setting[_]] = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.2" cross CrossVersion.full),
   organization := "com.itv",
-  scalaVersion := "2.13.4",
-  crossScalaVersions := Seq("2.12.12", scalaVersion.value),
   bloopAggregateSourceDependencies in Global := true,
 )
 
 def createProject(projectName: String): Project =
   Project(projectName, file(projectName))
     .settings(commonSettings)
-    .settings(name := s"fs2-quartz-$projectName")
+    .settings(name := s"cats-quartz-$projectName")
 
 lazy val root = (project in file("."))
   .aggregate(core, extruder, docs)
@@ -58,14 +63,14 @@ lazy val extruder = createProject("extruder")
   )
 
 lazy val docs = project
-  .in(file("fs2-quartz-docs"))
+  .in(file("cats-quartz-docs"))
   .enablePlugins(MdocPlugin)
   .settings(commonSettings)
   .settings(
     skip in publish := true,
     mdocOut := baseDirectory.in(ThisBuild).value,
     mdocVariables := Map(
-      "FS2_QUARTZ_VERSION" -> version.value
+      "CATS_QUARTZ_VERSION" -> version.value
     ),
     releaseProcess := Seq[ReleaseStep](
       ReleasePlugin.autoImport.releaseStepInputTask(MdocPlugin.autoImport.mdoc),
@@ -74,4 +79,4 @@ lazy val docs = project
   )
   .dependsOn(core, extruder)
 
-addCommandAlias("buildFs2Quartz", ";clean;+test;mdoc")
+addCommandAlias("buildCatsQuartz", ";clean;+test;mdoc")
