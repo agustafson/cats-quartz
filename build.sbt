@@ -9,20 +9,19 @@ releaseCrossBuild := true
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
+githubSuppressPublicationWarning in Global := true
+githubOwner in Global := "ITV"
+githubRepository in Global := "cats-quartz"
+githubTokenSource in Global := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
+
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
+ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
+
 val commonSettings: Seq[Setting[_]] = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   organization := "com.itv",
   bloopAggregateSourceDependencies in Global := true,
-  credentials ++=
-    Seq(".itv-credentials", ".user-credentials", ".credentials")
-      .map(fileName => Credentials(Path.userHome / ".ivy2" / fileName)),
-  publishTo in ThisBuild := {
-    val artifactory = "https://itvrepos.jfrog.io/itvrepos/oasvc-ivy"
-    if (isSnapshot.value)
-      Some("Artifactory Realm" at artifactory)
-    else
-      Some("Artifactory Realm" at artifactory + ";build.timestamp=" + new java.util.Date().getTime)
-  },
 )
 
 def createProject(projectName: String): Project =
