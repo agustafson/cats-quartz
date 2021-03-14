@@ -2,15 +2,15 @@ import sbt._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-scalaVersion in ThisBuild := "2.13.4"
+scalaVersion in ThisBuild := "2.13.5"
 
-crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.12.12")
+crossScalaVersions in ThisBuild ++= Seq("2.12.13")
 releaseCrossBuild := true
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
 val commonSettings: Seq[Setting[_]] = Seq(
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.2" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   organization := "com.itv",
   bloopAggregateSourceDependencies in Global := true,
   credentials ++=
