@@ -126,4 +126,6 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - run: sbt ++${{ matrix.scala }} ci-release
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: sbt ++${{ matrix.scala }} ci-release
