@@ -16,7 +16,14 @@ ThisBuild / githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || Toke
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
-ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "GITHUB_TOKEN" -> "${{ secrets.GITHUB_TOKEN }}",
+    )
+  )
+)
 
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(List("scalafmtCheckAll"), name = Some("Check formatting")),
