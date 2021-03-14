@@ -18,6 +18,13 @@ ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
 ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
 
+ThisBuild / githubWorkflowBuild := Seq(
+  WorkflowStep.Sbt(List("scalafmtCheckAll"), name = Some("Check formatting")),
+  WorkflowStep.Sbt(List("test:compile"), name = Some("Compile")),
+  WorkflowStep.Sbt(List("test"), name = Some("Run tests")),
+  WorkflowStep.Sbt(List("doc"), name = Some("Build docs")),
+)
+
 val commonSettings: Seq[Setting[_]] = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   organization := "com.itv",
@@ -41,7 +48,7 @@ lazy val core = createProject("core")
     libraryDependencies ++= Seq(
       "org.quartz-scheduler" % "quartz"                          % Versions.quartz exclude ("com.zaxxer", "HikariCP-java7"),
       "org.typelevel"       %% "cats-effect"                     % Versions.catsEffect,
-      "co.fs2"              %% "fs2-io"                          % Versions.fs2,
+      "co.fs2"              %% "fs2-core"                        % Versions.fs2,
       "org.scalatest"       %% "scalatest"                       % Versions.scalatest           % Test,
       "org.scalatestplus"   %% "scalacheck-1-14"                 % Versions.scalatestScalacheck % Test,
       "com.dimafeng"        %% "testcontainers-scala-scalatest"  % Versions.testContainers      % Test,
