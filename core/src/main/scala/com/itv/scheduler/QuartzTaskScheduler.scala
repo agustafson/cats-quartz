@@ -80,7 +80,7 @@ class QuartzTaskScheduler[F[_], J](
 
 object QuartzTaskScheduler {
   def apply[F[_], J: JobDataEncoder](
-      quartzConfig: Fs2QuartzConfig,
+      quartzConfig: CatsQuartzConfig,
       callbackJobFactory: CallbackJobFactory,
   )(implicit F: Sync[F]): Resource[F, QuartzTaskScheduler[F, J]] =
     apply(quartzConfig.toQuartzProperties, callbackJobFactory)

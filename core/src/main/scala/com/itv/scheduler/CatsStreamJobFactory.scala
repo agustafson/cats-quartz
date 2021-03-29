@@ -47,8 +47,8 @@ class AckingQueueJobFactory[F[_]: Concurrent, M[*[_], _], A: JobDecoder](
     )
 }
 
-object Fs2StreamJobFactory {
-  def autoAcking[F[_]: MonadError[*[_], Throwable], A: JobDecoder](
+object CatsStreamJobFactory {
+  def autoAcking[F[_]: Concurrent, A: JobDecoder](
       dispatcher: Dispatcher[F],
       messages: Queue[F, A]
   ): AutoAckingQueueJobFactory[F, A] =
@@ -60,7 +60,7 @@ object Fs2StreamJobFactory {
   ): AckingQueueJobFactory[F, AckableMessage, A] =
     new AckingQueueJobFactory[F, AckableMessage, A](dispatcher, messages, AckableMessage[F, A])
 
-  def ackingResource[F[_]: Concurrent: Sync: Dispatcher, A: JobDecoder](
+  def ackingResource[F[_]: Concurrent: Sync, A: JobDecoder](
       dispatcher: Dispatcher[F],
       messages: Queue[F, Resource[F, A]]
   ): AckingQueueJobFactory[F, Resource, A] =

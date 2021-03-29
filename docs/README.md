@@ -1,11 +1,11 @@
-# fs2-quartz
-Quarts scheduler library using fs2
+# cats-quartz
+Quarts scheduler library using cats
 
 ### Import
 ```scala
 libraryDependencies ++= Seq(
-  "com.itv" %% "fs2-quartz-core"     % "@FS2_QUARTZ_VERSION@",
-  "com.itv" %% "fs2-quartz-extruder" % "@FS2_QUARTZ_VERSION@"
+  "com.itv" %% "cats-quartz-core"     % "@CATS_QUARTZ_VERSION@",
+  "com.itv" %% "cats-quartz-extruder" % "@CATS_QUARTZ_VERSION@"
 )
 ```
 
@@ -60,7 +60,7 @@ import scala.concurrent.ExecutionContext
 implicit val contextShift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
 val jobMessageQueue = Queue.unbounded[IO, ParentJob].unsafeRunSync()
-val autoAckJobFactory = Fs2StreamJobFactory.autoAcking[IO, ParentJob](jobMessageQueue)
+val autoAckJobFactory = CatsStreamJobFactory.autoAcking[IO, ParentJob](jobMessageQueue)
 ```
 
 #### Manually Acked messages
@@ -77,12 +77,12 @@ In both cases, the quartz job is only marked as complete once the `acker.complet
 // each message is wrapped as a `Resource` which acks on completion
 val ackableJobResourceMessageQueue = Queue.unbounded[IO, Resource[IO, ParentJob]].unsafeRunSync()
 val ackingResourceJobFactory: AckingQueueJobFactory[IO, Resource, ParentJob] =
-  Fs2StreamJobFactory.ackingResource(ackableJobResourceMessageQueue)
+  CatsStreamJobFactory.ackingResource(ackableJobResourceMessageQueue)
 
 // each message is wrapped as a `AckableMessage` which acks on completion
 val ackableJobMessageQueue = Queue.unbounded[IO, AckableMessage[IO, ParentJob]].unsafeRunSync()
 val ackingJobFactory: AckingQueueJobFactory[IO, AckableMessage, ParentJob] =
-  Fs2StreamJobFactory.acking(ackableJobMessageQueue)
+  CatsStreamJobFactory.acking(ackableJobMessageQueue)
 ```
 
 ### Creating a scheduler

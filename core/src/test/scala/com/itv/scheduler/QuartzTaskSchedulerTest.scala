@@ -51,7 +51,7 @@ class QuartzTaskSchedulerTest extends AnyFlatSpec with Matchers with ForAllTestC
       messageQueue: Queue[IO, ParentTestJob]
   ): Resource[IO, QuartzTaskScheduler[IO, ParentTestJob]] =
     Dispatcher[IO].flatMap { dispatcher =>
-      val jobFactory = Fs2StreamJobFactory.autoAcking[IO, ParentTestJob](dispatcher, messageQueue)
+      val jobFactory = CatsStreamJobFactory.autoAcking[IO, ParentTestJob](dispatcher, messageQueue)
       QuartzTaskScheduler[IO, ParentTestJob](quartzProperties, jobFactory)
     }
 

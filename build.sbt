@@ -2,33 +2,46 @@ import sbt._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-scalaVersion in ThisBuild := "2.13.4"
+scalaVersion in ThisBuild := "2.13.5"
 
-crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.12.12")
+crossScalaVersions in ThisBuild ++= Seq("2.12.13")
 releaseCrossBuild := true
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
+ThisBuild / githubSuppressPublicationWarning := true
+ThisBuild / githubOwner := "ITV"
+ThisBuild / githubRepository := "cats-quartz"
+ThisBuild / githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
+
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "GITHUB_TOKEN" -> "${{ secrets.GITHUB_TOKEN }}",
+    )
+  )
+)
+
+ThisBuild / githubWorkflowBuild := Seq(
+  WorkflowStep.Sbt(List("scalafmtCheckAll"), name = Some("Check formatting")),
+  WorkflowStep.Sbt(List("test:compile"), name = Some("Compile")),
+  WorkflowStep.Sbt(List("test"), name = Some("Run tests")),
+  WorkflowStep.Sbt(List("doc"), name = Some("Build docs")),
+)
+
 val commonSettings: Seq[Setting[_]] = Seq(
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.2" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   organization := "com.itv",
   bloopAggregateSourceDependencies in Global := true,
-  credentials ++=
-    Seq(".itv-credentials", ".user-credentials", ".credentials")
-      .map(fileName => Credentials(Path.userHome / ".ivy2" / fileName)),
-  publishTo in ThisBuild := {
-    val artifactory = "https://itvrepos.jfrog.io/itvrepos/oasvc-ivy"
-    if (isSnapshot.value)
-      Some("Artifactory Realm" at artifactory)
-    else
-      Some("Artifactory Realm" at artifactory + ";build.timestamp=" + new java.util.Date().getTime)
-  },
 )
 
 def createProject(projectName: String): Project =
   Project(projectName, file(projectName))
     .settings(commonSettings)
-    .settings(name := s"fs2-quartz-$projectName")
+    .settings(name := s"cats-quartz-$projectName")
 
 lazy val root = (project in file("."))
   .aggregate(core, extruder, docs)
@@ -43,7 +56,7 @@ lazy val core = createProject("core")
       "org.quartz-scheduler" % "quartz"                          % Versions.quartz exclude ("com.zaxxer", "HikariCP-java7"),
       "org.typelevel"       %% "cats-effect"                     % Versions.catsEffect,
       "org.scalatest"       %% "scalatest"                       % Versions.scalatest           % Test,
-      "org.scalatestplus"   %% "scalacheck-1-14"                 % Versions.scalatestScalacheck % Test,
+      "org.scalatestplus"   %% "scalacheck-1-15"                 % Versions.scalatestScalacheck % Test,
       "com.dimafeng"        %% "testcontainers-scala-scalatest"  % Versions.testContainers      % Test,
       "com.dimafeng"        %% "testcontainers-scala-postgresql" % Versions.testContainers      % Test,
       "org.postgresql"       % "postgresql"                      % Versions.postgresql          % Test,
@@ -60,21 +73,21 @@ lazy val extruder = createProject("extruder")
     libraryDependencies ++= Seq(
       "io.extruder"       %% "extruder-core"   % Versions.extruder,
       "org.scalatest"     %% "scalatest"       % Versions.scalatest           % Test,
-      "org.scalatestplus" %% "scalacheck-1-14" % Versions.scalatestScalacheck % Test,
+      "org.scalatestplus" %% "scalacheck-1-15" % Versions.scalatestScalacheck % Test,
       "org.scalamock"     %% "scalamock"       % Versions.scalamock           % Test,
       "ch.qos.logback"     % "logback-classic" % Versions.logback             % Test,
     ),
   )
 
 lazy val docs = project
-  .in(file("fs2-quartz-docs"))
+  .in(file("cats-quartz-docs"))
   .enablePlugins(MdocPlugin)
   .settings(commonSettings)
   .settings(
     skip in publish := true,
     mdocOut := baseDirectory.in(ThisBuild).value,
     mdocVariables := Map(
-      "FS2_QUARTZ_VERSION" -> version.value
+      "CATS_QUARTZ_VERSION" -> version.value
     ),
     releaseProcess := Seq[ReleaseStep](
       ReleasePlugin.autoImport.releaseStepInputTask(MdocPlugin.autoImport.mdoc),
@@ -83,4 +96,4 @@ lazy val docs = project
   )
   .dependsOn(core, extruder)
 
-addCommandAlias("buildFs2Quartz", ";clean;+test;mdoc")
+addCommandAlias("buildCatsQuartz", ";clean;+test;mdoc")
