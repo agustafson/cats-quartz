@@ -60,7 +60,7 @@ object CatsStreamJobFactory {
   ): AckingQueueJobFactory[F, AckableMessage, A] =
     new AckingQueueJobFactory[F, AckableMessage, A](dispatcher, messages, AckableMessage[F, A])
 
-  def ackingResource[F[_]: Concurrent: Sync, A: JobDecoder](
+  def ackingResource[F[_]: Async, A: JobDecoder](
       dispatcher: Dispatcher[F],
       messages: Queue[F, Resource[F, A]]
   ): AckingQueueJobFactory[F, Resource, A] =
